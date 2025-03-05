@@ -14,18 +14,16 @@ const isWorkingDay = (date: Date): boolean =>
 const setWorkdayStartTime = (date: Date): Date => {
   const startTime = new Date(date);
   startTime.setHours(WORKDAY_START_HOUR, 0, 0, 0);
-
   return startTime;
 };
 
 const setWorkdayEndTime = (date: Date): Date => {
   const endTime = new Date(date);
   endTime.setHours(WORKDAY_END_HOUR, 0, 0, 0);
-
   return endTime;
 };
 
-const moveToNextWorkingDay = (date: Date): Date => {
+const getNextWorkingDay = (date: Date): Date => {
   let nextDate = new Date(date);
 
   while (!isWorkingDay(nextDate)) {
@@ -35,7 +33,7 @@ const moveToNextWorkingDay = (date: Date): Date => {
   return nextDate;
 };
 
-const adjustDateToBusinessHours = (date: Date): Date => {
+export const adjustDateToBusinessHours = (date: Date): Date => {
   let adjustedDate = new Date(date);
   const currentHour = adjustedDate.getHours();
 
@@ -47,7 +45,7 @@ const adjustDateToBusinessHours = (date: Date): Date => {
   }
 
   if (!isWorkingDay(adjustedDate)) {
-    adjustedDate = moveToNextWorkingDay(adjustedDate);
+    adjustedDate = getNextWorkingDay(adjustedDate);
     adjustedDate = setWorkdayStartTime(adjustedDate);
   }
 
@@ -57,8 +55,27 @@ const adjustDateToBusinessHours = (date: Date): Date => {
 const calculateTimeToEndOfDay = (date: Date): number => {
   const currentMilliseconds = date.getTime();
   const endOfDayMilliseconds = setWorkdayEndTime(date).getTime();
-
   return endOfDayMilliseconds - currentMilliseconds;
+};
+
+const processRemainingTime = (
+  date: Date,
+  remainingMilliseconds: number
+): { date: Date; remainingMilliseconds: number } => {
+  const currentMilliseconds = date.getTime();
+  const millisecondsToEndOfDay = calculateTimeToEndOfDay(date);
+
+  if (remainingMilliseconds <= millisecondsToEndOfDay) {
+    date.setTime(currentMilliseconds + remainingMilliseconds);
+    remainingMilliseconds = 0;
+  } else {
+    remainingMilliseconds -= millisecondsToEndOfDay;
+    date.setDate(date.getDate() + 1);
+    date = getNextWorkingDay(date);
+    date = setWorkdayStartTime(date);
+  }
+
+  return { date, remainingMilliseconds };
 };
 
 export const calculateDueDate = (
@@ -73,18 +90,9 @@ export const calculateDueDate = (
   let remainingMilliseconds = turnaroundTime * 60 * 60 * 1000;
 
   while (remainingMilliseconds > 0) {
-    const currentMilliseconds = dueDate.getTime();
-    const millisecondsToEndOfDay = calculateTimeToEndOfDay(dueDate);
-
-    if (remainingMilliseconds <= millisecondsToEndOfDay) {
-      dueDate.setTime(currentMilliseconds + remainingMilliseconds);
-      remainingMilliseconds = 0;
-    } else {
-      remainingMilliseconds -= millisecondsToEndOfDay;
-      dueDate.setDate(dueDate.getDate() + 1);
-      dueDate = moveToNextWorkingDay(dueDate);
-      dueDate = setWorkdayStartTime(dueDate);
-    }
+    const result = processRemainingTime(dueDate, remainingMilliseconds);
+    dueDate = result.date;
+    remainingMilliseconds = result.remainingMilliseconds;
   }
 
   return dueDate;
