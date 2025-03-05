@@ -9,7 +9,7 @@ $ npm install
 ## Run Code and Tests
 
 ```
-$ npm start
+$ npm run dev
 $ npm test
 ```
 
@@ -20,7 +20,9 @@ system. The task is to implement the CalculateDueDate method:
 
 - Input: Takes the submit date/time and turnaround time.
 - Output: Returns the date/time when the issue is resolved.
-  Rules
+
+## Rules
+
 - Working hours are from 9AM to 5PM on every working day, Monday to Friday.
 - Holidays should be ignored (e.g. A holiday on a Thursday is considered as a
   working day. A working Saturday counts as a non-working day.).
@@ -36,11 +38,12 @@ system. The task is to implement the CalculateDueDate method:
 
 - Use your favourite programming language.
 - Do not implement the user interface or CLI.
-- Do not write a pseudo code. Write a code that you would commit/push to a
-  repository and which solves the given problem.
+- Do not write a pseudo code. Write a code that you would commit/push to a repository and which solves the given problem.
 - You have 24 hours to submit your solution.
 - You can submit your solution even if you have not finished it fully.
-  Bonus – Not mandatory
+
+### Bonus – Not mandatory
+
 - Including automated tests to your solution is a plus.
 - Test-driven (TDD) solutions are especially welcome.
 - Clean Code (by Robert. C. Martin) makes us happy.

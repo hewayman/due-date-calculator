@@ -2,10 +2,11 @@
   "name": "due-date-calculator",
   "version": "1.0.0",
   "description": "",
-  "main": "dueDateCalculator.js",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/dueDateCalculator.js",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
     "test": "jest"
   },
   "keywords": [],
